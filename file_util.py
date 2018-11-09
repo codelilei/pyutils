@@ -18,11 +18,14 @@ def get_list(path, suf):
     if not os.path.exists(path):
         print(path + "not found")
         return []
-    files = os.listdir(path)
+    dirlist = os.listdir(path)
     # files = [os.path.join(path, file) for file in files]
-    # return filter(lambda file: file.endswith(suf) and os.path.isfile(file), files)
-    files = [os.path.join(path, file)
-             for file in files if file.endswith(suf) and os.path.isfile(file)]
+    # return filter(lambda file: file.endswith(suf), files)
+    files = []
+    for f in dirlist:
+        file = os.path.join(path, f)
+        if file.endswith(suf) and os.path.isfile(file):
+            files.append(f)
     return files
 
 
