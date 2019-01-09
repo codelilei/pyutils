@@ -69,7 +69,11 @@ def proc_datalist(file, train_ratio=None, insert='', append='', label_func=None)
         for line in fd:
             if not line.strip():
                 continue
-            imname, label = line.split()
+            try:
+                imname, label = line.split()
+            except Exception as e:
+                imname = line.strip()
+                label = ''
             if label_func:
                 label = label_func(label)
             line_new = '{}{} {}{}'.format(insert, imname, label, append)
@@ -89,6 +93,27 @@ def proc_datalist(file, train_ratio=None, insert='', append='', label_func=None)
         return
     file_new = root + '_proc' + ext
     list2file(datalist, file_new)
+
+
+def filter_line(file, keep_word=None, exclude_word=None, ignore_case=False):
+    if keep_word is None and exclude_word is None:
+        return
+    if ignore_case:
+        keep_word = keep_word.lower()
+        exclude_word = exclude_word.lower()
+    root, ext = os.path.splitext(file)
+    file_filter = root + '_filter' + ext
+    with open(file, encoding='ansi') as fd, open(file_filter, 'w', encoding='ansi') as fd1:
+        for line in fd:
+            line = line.strip()
+            if not line:
+                continue
+            line_tmp = line.lower() if ignore_case else line
+            if keep_word and keep_word not in line_tmp:
+                continue
+            if exclude_word and exclude_word in line_tmp:
+                continue
+            fd1.write(line + '\n')
 
 
 def label_func100(x):
