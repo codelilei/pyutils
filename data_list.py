@@ -50,8 +50,14 @@ def merge_datalist(path_pattern, merge_name):
         mergename = os.path.join(os.path.split(path_pattern)[0], merge_name)
     mergefile = open(mergename, 'w', encoding='ansi')
     for file in filelist:
+        last_line = ''
         for line in open(file, 'r', encoding='ansi'):
-            mergefile.write(line)
+            if line.strip():
+                print(line)
+                mergefile.write(line)
+                last_line = line
+        if not last_line.endswith('\n'):
+            mergefile.write('\n')
     mergefile.close()
 
 
@@ -63,7 +69,7 @@ def shuffle_datalist(file):
     list2file(datalist, shufflefile)
 
 
-def proc_datalist(file, train_ratio=None, insert='', append='', label_func=None, pick_num=None):
+def proc_datalist(file, train_ratio=None, insert='', append='', label_func=None, pick_num=None, shuffle=True):
     datalist = []
     with open(file, encoding='ansi') as fd:
         for line in fd:
@@ -71,14 +77,16 @@ def proc_datalist(file, train_ratio=None, insert='', append='', label_func=None,
                 continue
             try:
                 imname, label = line.split()
+                label = ' ' + label
             except Exception as e:
                 imname = line.strip()
                 label = ''
             if label_func:
                 label = label_func(label)
-            line_new = '{}{} {}{}'.format(insert, imname, label, append)
+            line_new = '{}{}{}{}'.format(insert, imname, label, append)
             datalist.append(line_new)
-    random.shuffle(datalist)
+    if shuffle:
+        random.shuffle(datalist)
     if pick_num:
         datalist = datalist[:pick_num]
     root, ext = os.path.splitext(file)
