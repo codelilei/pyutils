@@ -53,7 +53,7 @@ def merge_datalist(path_pattern, merge_name):
         last_line = ''
         for line in open(file, 'r', encoding='ansi'):
             if line.strip():
-                print(line)
+                # print(line)
                 mergefile.write(line)
                 last_line = line
         if not last_line.endswith('\n'):
@@ -170,6 +170,13 @@ def gen_list(root_folder, exts=None, keep_root=False, lamda_dir_level=None):
                     rel_path_new = rt_name + '/' + rel_path_new
                 fd.write(rel_path_new + '\n')
     fd.close()
+
+
+def backslash2slash(list_path):
+    new_list = os.path.splitext(list_path)[0] + '_slash.txt'
+    with open(new_list, 'w', encoding='ansi') as fd:
+        for line in open(list_path):
+            fd.write(line.replace('\\', '/'))
 
 
 def label_func100(x):
