@@ -172,6 +172,20 @@ def gen_list(root_folder, exts=None, keep_root=False, lamda_dir_level=None):
     fd.close()
 
 
+def diff_list(flist1, flist2, func=lambda line: line):
+    set1 = set()
+    set2 = set()
+    for line1, line2 in zip(open(flist1), open(flist2)):
+        set1.add(func(line1))
+        set2.add(func(line2))
+    set_d = set1 - set2
+    if len(set_d) < 1:
+        return
+    with open('diff_list.txt', 'w') as fd:
+        for i in set_d:
+            fd.write(i + '\n')
+
+
 def backslash2slash(list_path):
     new_list = os.path.splitext(list_path)[0] + '_slash.txt'
     with open(new_list, 'w', encoding='ansi') as fd:
@@ -201,3 +215,5 @@ if __name__ == '__main__':
     # split_pos_neg('D:/train_shuffle.txt')
     # gen_list('test_folder', '.jpg', False, lambda d: d > 0)
     # gen_list('E:/cellphone_imgs', ['.jpg', '.png'], keep_root=True)
+    # diff_list("test1.txt", "test2.txt", lambda line: os.path.splitext(line.split()[0])[0])
+    
