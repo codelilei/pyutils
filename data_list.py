@@ -175,9 +175,10 @@ def gen_list(root_folder, exts=None, keep_root=False, lamda_dir_level=None):
 def diff_list(flist1, flist2, func=lambda line: line):
     set1 = set()
     set2 = set()
-    for line1, line2 in zip(open(flist1), open(flist2)):
-        set1.add(func(line1))
-        set2.add(func(line2))
+    for line1 in open(flist1):
+        set1.add(func(line1.strip()))
+    for line2 in open(flist2):
+        set2.add(func(line2.strip()))
     set_d = set1 - set2
     if len(set_d) < 1:
         return
@@ -191,6 +192,22 @@ def backslash2slash(list_path):
     with open(new_list, 'w', encoding='ansi') as fd:
         for line in open(list_path):
             fd.write(line.replace('\\', '/'))
+
+
+def replace_label(list_path, old_label, new_label):
+    new_list = os.path.splitext(list_path)[0] + '_{}to{}.txt'.format(old_label, new_label)
+    # pat = re.compile('(?P<ext>jpg|png|jpeg|bmp) (?P<label>\d+)')
+    pat = re.compile('(?P<ext>jpg|png|jpeg|bmp) {}'.format(old_label), re.I)
+    repl = '\\g<ext> {}'.format(new_label)
+    # exts = ['jpg', 'png', 'jpeg', 'bmp']
+    # repls = [('.{} {}'.format(ext, old_label), '.{} {}'.format(ext, new_label)) for ext in exts]
+    fd = open(new_list, 'w')
+    for line in open(list_path):
+        # for rep_pair in repls:
+        #     line = line.replace(*rep_pair)
+        line = pat.sub(repl, line)
+        fd.write(line)
+    fd.close()
 
 
 def label_func100(x):
